@@ -86,14 +86,7 @@ namespace Transifex.Backend.Services
             }
 
             fetchDetailsBlock.Complete();
-            try
-            {
-                await storeInMongoBlock.Completion;
-            }
-            catch (AggregateException ex)
-            {
-                throw;
-            }
+            await storeInMongoBlock.Completion;
         }
 
         private HttpClient GetHttpClient()

@@ -21,12 +21,30 @@ namespace Transifex.Backend.Models
         public class DetailData
         {
             public string Comment { get; set; }
+
+            [JilDirective(Name = "string_hash")]
+            public string StringHash { get; set; }
+
             public string Key { get; set; }
+        }
+
+        public class SuggestionData
+        {
+            [JilDirective(Name = "user__username")]
+            public string Username { get; set; }
+
+            [JilDirective(Name = "last_update")]
+            public DateTime LastUpdate { get; set; }
+
+            [BsonSerializer(typeof(DictionarySerializerInt<string>))]
+            public Dictionary<int, string> Entries { get; set; }
         }
 
         [BsonSerializer(typeof(DictionarySerializerInt<Translation>))]
         public Dictionary<int, Translation> Translations { get; set; }
 
         public DetailData Details { get; set; }
+
+        public SuggestionData[] Suggestions { get; set; }
     }
 }

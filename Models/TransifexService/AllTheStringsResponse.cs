@@ -32,8 +32,7 @@ namespace Transifex.Backend.Models.Services
             return Objects.Select(o => new TransifexString(
                 (int)o[NameToPosition[nameof(TransifexString.Id)]],
                 (string)o[NameToPosition[nameof(TransifexString.String)]],
-                (bool)o[NameToPosition[nameof(TransifexString.Reviewed)]],
-                (string)o[NameToPosition[nameof(TransifexString.Translation)]]
+                (bool)o[NameToPosition[nameof(TransifexString.Reviewed)]]
             ));
         }
     }

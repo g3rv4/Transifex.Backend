@@ -44,25 +44,18 @@ namespace Transifex.Backend
 
             app.UseMvc (routes => {
                 routes.MapRoute (
-                    name: "status",
-                    template: "app/status",
+                    name: "updateData",
+                    template: "app/admin/updateData",
                     defaults: new {
-                        controller = "Home",
-                        action = "Index"
+                        controller = "Admin",
+                        action = "UpdateData"
                     });
                 routes.MapRoute (
-                    name: "getData",
-                    template: "app/getData",
+                    name: "query",
+                    template: "app/query",
                     defaults: new {
                         controller = "Home",
-                        action = "GetData"
-                    });
-                routes.MapRoute (
-                    name: "index",
-                    template: "",
-                    defaults: new {
-                        controller = "Home",
-                        action = "GetData"
+                        action = "Query"
                     });
             });
         }

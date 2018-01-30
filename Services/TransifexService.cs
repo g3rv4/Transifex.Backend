@@ -17,7 +17,6 @@ namespace Transifex.Backend.Services
     {
         Task<IEnumerable<TransifexString>> GetAllStringsAsync();
         Task UpdateStringsDatabaseAsync();
-
     }
 
     public class TransifexService : ITransifexService
@@ -66,7 +65,8 @@ namespace Transifex.Backend.Services
             var storeInMongoBlock = new ActionBlock<(TransifexString str, string content)>(async data =>
             {
                 var details = JSON.Deserialize<TransifexStringDetails>(data.content, Options.ISO8601CamelCase);
-                data.str.Details = details;
+                data.str.LoadDataFromDetails(details);
+
                 await stringsCollection.ReplaceOneAsync(
                     Builders<TransifexString>.Filter.Eq(s => s.Id, data.str.Id), // filter
                     data.str, // new value
@@ -107,32 +107,32 @@ namespace Transifex.Backend.Services
 
         private async Task<string> GetUrlAsync(string url)
         {
-            var db = _redisService.GetDatabase();
-            string cached = await db.StringGetAsync("url:" + url);
-            if (cached != null)
-            {
-                return cached;
-            }
+            var isDevelopment = _configurationService.GetValue<string>("ASPNETCORE_ENVIRONMENT")== "Development";
 
-            string content = null;
-
-            using(var client = GetHttpClient())
+            async Task<string> reallyGetTheUrl()
             {
+                var client = GetHttpClient();
                 var response = await client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
-                content = await response.Content.ReadAsStringAsync();
+                return await response.Content.ReadAsStringAsync();
             }
 
-            // do not expire stuff in local (https://youtu.be/8iagmMy7JEE?t=1m11s)
-            if (_configurationService.GetValue<string>("ASPNETCORE_ENVIRONMENT")== "Development")
+            // cache aggresively in local because https://youtu.be/8iagmMy7JEE?t=1m11s
+            if (isDevelopment)
             {
+                var db = _redisService.GetDatabase();
+                string cached = await db.StringGetAsync("url:" + url);
+                if (cached != null)
+                {
+                    return cached;
+                }
+
+                var content = await reallyGetTheUrl();
                 await db.StringSetAsync("url:" + url, content);
+                return content;
             }
-            else
-            {
-                await db.StringSetAsync("url:" + url, content, TimeSpan.FromMinutes(60));
-            }
-            return content;
+            
+            return await reallyGetTheUrl();
         }
     }
 }

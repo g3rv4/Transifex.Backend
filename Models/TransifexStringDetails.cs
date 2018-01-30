@@ -8,16 +8,6 @@ namespace Transifex.Backend.Models
 {
     public class TransifexStringDetails
     {
-        public class Translation
-        {
-            [JilDirective(Name = "last_update")]
-            public DateTime LastUpdate { get; set; }
-
-            public string String { get; set; }
-
-            public string User { get; set; }
-        }
-
         public class DetailData
         {
             public string Comment { get; set; }
@@ -36,12 +26,10 @@ namespace Transifex.Backend.Models
             [JilDirective(Name = "last_update")]
             public DateTime LastUpdate { get; set; }
 
-            [BsonSerializer(typeof(DictionarySerializerInt<string>))]
             public Dictionary<int, string> Entries { get; set; }
         }
 
-        [BsonSerializer(typeof(DictionarySerializerInt<Translation>))]
-        public Dictionary<int, Translation> Translations { get; set; }
+        public Dictionary<int, TransifexString.TranslationDetails> Translations { get; set; }
 
         public DetailData Details { get; set; }
 

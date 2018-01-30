@@ -1,3 +1,5 @@
 .vscode/
 bin/
 obj/
+/.vs/Transifex.Backend/v15
+/.vs

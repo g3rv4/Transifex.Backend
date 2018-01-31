@@ -13,6 +13,8 @@ namespace Transifex.Backend.Controllers
             _transifexService = transifexService;
         }
 
+        [HttpGet]
+        [Route("api/admin/updatedata")]
         public async Task<IActionResult> UpdateData()
         {
             await _transifexService.UpdateStringsDatabaseAsync();

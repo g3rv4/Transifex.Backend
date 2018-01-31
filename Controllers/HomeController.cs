@@ -24,6 +24,7 @@ namespace Transifex.Backend.Controllers
         }
 
         [HttpPost]
+        [Route("api/home/query")]
         public async Task<IActionResult> Query()
         {
             // I'd love for this to eventually use a parser to define a query syntax... in the meantime,

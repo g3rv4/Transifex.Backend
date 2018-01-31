@@ -1,3 +1,8 @@
 .vscode/
 bin/
 obj/
+/.vs/Transifex.Backend/v15
+/.vs
+/Transifex.Backend.csproj.user
+/Transifex.Backend.sln
+/Properties

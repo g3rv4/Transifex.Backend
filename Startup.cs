@@ -9,6 +9,7 @@ using MongoDB.Bson.Serialization.Options;
 using MongoDB.Bson.Serialization.Serializers;
 using Transifex.Backend.Models;
 using Transifex.Backend.Services;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Transifex.Backend
 {
@@ -25,16 +26,30 @@ namespace Transifex.Backend
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            
+
+
+
+
             services.AddSingleton (Configuration);
             services.AddSingleton (typeof (IRedisService), typeof (RedisService));
             services.AddSingleton (typeof (ITransifexService), typeof (TransifexService));
             services.AddSingleton (typeof (IMongoDbService), typeof (MongoDbService));
+
+            //Swagger help page
+            //https://docs.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?tabs=visual-studio
+            // Register the Swagger generator, defining one or more Swagger documents
+            //go into http://localhost:[random port]/swagger/ to see the swagger landing page for this project
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -42,22 +57,18 @@ namespace Transifex.Backend
 
             app.UseStaticFiles();
 
-            app.UseMvc (routes => {
-                routes.MapRoute (
-                    name: "updateData",
-                    template: "app/admin/updateData",
-                    defaults: new {
-                        controller = "Admin",
-                        action = "UpdateData"
-                    });
-                routes.MapRoute (
-                    name: "query",
-                    template: "app/query",
-                    defaults: new {
-                        controller = "Home",
-                        action = "Query"
-                    });
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            //Routes now added to controlles using annotations.
+            app.UseMvc();
+
         }
     }
 }

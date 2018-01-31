@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Jil;
-using MongoDB.Bson.Serialization.Attributes;
-using Transifex.Backend.Helpers.MongoDb;
 
 namespace Transifex.Backend.Models
 {

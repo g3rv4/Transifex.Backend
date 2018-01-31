@@ -38,7 +38,7 @@ namespace Transifex.Backend
             //Swagger help page
             //https://docs.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?tabs=visual-studio
             // Register the Swagger generator, defining one or more Swagger documents
-            //entrar a http://localhost:[random port]/swagger/
+            //go into http://localhost:[random port]/swagger/ to see the swagger landing page for this project
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
@@ -66,25 +66,8 @@ namespace Transifex.Backend
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-
-            app.UseMvc (routes => {
-                routes.MapRoute (
-                    name: "updateData",
-                    template: "app/admin/updateData",
-                    defaults: new {
-                        controller = "Admin",
-                        action = "UpdateData"
-                    });
-                routes.MapRoute (
-                    name: "query",
-                    template: "app/query",
-                    defaults: new {
-                        controller = "Home",
-                        action = "Query"
-                    });
-            });
-
-
+            //Routes now added to controlles using annotations.
+            app.UseMvc();
 
         }
     }

@@ -27,18 +27,15 @@ namespace Transifex.Backend
         {
             services.AddMvc();
 
-
-
-
             services.AddSingleton (Configuration);
             services.AddSingleton (typeof (IRedisService), typeof (RedisService));
             services.AddSingleton (typeof (ITransifexService), typeof (TransifexService));
             services.AddSingleton (typeof (IMongoDbService), typeof (MongoDbService));
 
-            //Swagger help page
-            //https://docs.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?tabs=visual-studio
+            // Swagger help page
+            // https://docs.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?tabs=visual-studio
             // Register the Swagger generator, defining one or more Swagger documents
-            //go into http://localhost:[random port]/swagger/ to see the swagger landing page for this project
+            // go into http://localhost:[random port]/swagger/ to see the swagger landing page for this project
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
@@ -68,7 +65,6 @@ namespace Transifex.Backend
 
             //Routes now added to controlles using annotations.
             app.UseMvc();
-
         }
     }
 }

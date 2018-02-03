@@ -7,6 +7,6 @@ namespace Transifex.Backend.ViewModels.Home
         public bool? IsReviewed { get; set; }
         public bool WithNonReviewedSuggestions { get; set; }
         public string[] OnlyTranslationsFromUsers { get; set; }
-        public string[] OnlSuggestionsFromUsers { get; set; }
+        public string[] OnlySuggestionsFromUsers { get; set; }
     }
 }

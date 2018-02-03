@@ -25,13 +25,11 @@ namespace Transifex.Backend.Controllers
 
         [HttpPost]
         [Route("api/home/query")]
-        public async Task<IActionResult> Query()
+        [ProducesResponseType(typeof(List<TransifexString>), 200)]
+        public async Task<IActionResult> Query([FromBody]QueryRequestViewModel model)
         {
             // I'd love for this to eventually use a parser to define a query syntax... in the meantime,
             // I'm doing something that works now
-
-            string body = new StreamReader(Request.Body).ReadToEnd();
-            var model = JSON.Deserialize<QueryRequestViewModel>(body, Options.CamelCase);
 
             var stringsCollection = _mongoDbService.GetCollection<TransifexString>();
 
@@ -55,16 +53,16 @@ namespace Transifex.Backend.Controllers
                     Builders<TransifexString>.Filter.Eq(s => s.Reviewed, model.IsReviewed.Value)
                 );
             }
-            if (model.WithNonReviewedSuggestions || model.OnlSuggestionsFromUsers?.Any()== true)
+            if (model.WithNonReviewedSuggestions || model.OnlySuggestionsFromUsers?.Any()== true)
             {
                 var matchObject = new BsonDocument();
                 if (model.WithNonReviewedSuggestions)
                 {
                     matchObject.Add(new BsonElement("daysCmp", new BsonDocument("$gte", 0)));
                 }
-                if (model.OnlSuggestionsFromUsers?.Any()== true)
+                if (model.OnlySuggestionsFromUsers?.Any()== true)
                 {
-                    matchObject.Add(new BsonElement("Suggestions.Username", new BsonDocument("$in", new BsonArray(model.OnlSuggestionsFromUsers))));
+                    matchObject.Add(new BsonElement("Suggestions.Username", new BsonDocument("$in", new BsonArray(model.OnlySuggestionsFromUsers))));
                 }
 
                 var matchingIds = await stringsCollection.AggregateAsync<BsonDocument>(

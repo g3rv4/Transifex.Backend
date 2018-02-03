@@ -7,9 +7,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Options;
 using MongoDB.Bson.Serialization.Serializers;
+using Swashbuckle.AspNetCore.Swagger;
 using Transifex.Backend.Models;
 using Transifex.Backend.Services;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace Transifex.Backend
 {
@@ -17,7 +17,8 @@ namespace Transifex.Backend
     {
         public IConfiguration Configuration { get; }
 
-        public Startup (IConfiguration configuration) {
+        public Startup(IConfiguration configuration)
+        {
             Configuration = configuration;
         }
 
@@ -27,10 +28,10 @@ namespace Transifex.Backend
         {
             services.AddMvc();
 
-            services.AddSingleton (Configuration);
-            services.AddSingleton (typeof (IRedisService), typeof (RedisService));
-            services.AddSingleton (typeof (ITransifexService), typeof (TransifexService));
-            services.AddSingleton (typeof (IMongoDbService), typeof (MongoDbService));
+            services.AddSingleton(Configuration);
+            services.AddSingleton(typeof(IRedisService), typeof(RedisService));
+            services.AddSingleton(typeof(ITransifexService), typeof(TransifexService));
+            services.AddSingleton(typeof(IMongoDbService), typeof(MongoDbService));
 
             // Swagger help page
             // https://docs.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?tabs=visual-studio
@@ -55,12 +56,16 @@ namespace Transifex.Backend
             app.UseStaticFiles();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "api/" + c.RouteTemplate;
+            });
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = "api/swagger";
+                c.SwaggerEndpoint("v1/swagger.json", "My API V1");
             });
 
             //Routes now added to controlles using annotations.

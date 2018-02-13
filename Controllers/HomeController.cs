@@ -1,9 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Transifex.Backend.Helpers;
 using Transifex.Backend.Models;
 using Transifex.Backend.Services;
@@ -23,7 +25,7 @@ namespace Transifex.Backend.Controllers
         [HttpPost]
         [Route("api/home/query")]
         [ProducesResponseType(typeof(List<TransifexString>), 200)]
-        public async Task<IActionResult> Query([FromBody]QueryRequestViewModel model)
+        public async Task<IActionResult> Query([FromBody] QueryRequestViewModel model)
         {
             // I'd love for this to eventually use a parser to define a query syntax... in the meantime,
             // I'm doing something that works now
@@ -41,7 +43,7 @@ namespace Transifex.Backend.Controllers
             if (model.TranslationRegex.HasValue())
             {
                 filters.Add(
-                    Builders<TransifexString>.Filter.Regex(s => s.Translation.String, new BsonRegularExpression(model.StringRegex))
+                    Builders<TransifexString>.Filter.Regex(s => s.Translation.String, new BsonRegularExpression(model.TranslationRegex))
                 );
             }
             if (model.IsReviewed.HasValue)
@@ -50,10 +52,10 @@ namespace Transifex.Backend.Controllers
                     Builders<TransifexString>.Filter.Eq(s => s.Reviewed, model.IsReviewed.Value)
                 );
             }
-            if (model.WithNonReviewedSuggestions || model.OnlySuggestionsFromUsers?.Any()== true)
+            if (model.WithNonReviewedSuggestions == true || model.OnlySuggestionsFromUsers?.Any()== true)
             {
                 var matchObject = new BsonDocument();
-                if (model.WithNonReviewedSuggestions)
+                if (model.WithNonReviewedSuggestions == true)
                 {
                     matchObject.Add(new BsonElement("daysCmp", new BsonDocument("$gte", 0)));
                 }
@@ -88,11 +90,18 @@ namespace Transifex.Backend.Controllers
                 );
             }
 
-            var matching = await stringsCollection.FindAsync(
-                Builders<TransifexString>.Filter.And(filters)
-            );
-            var result = await matching.ToListAsync();
+            IAsyncCursor<TransifexString> matching;
 
+            var oneSecond = TimeSpan.FromSeconds(1);
+            using(var cancellationTokenSource = new CancellationTokenSource(oneSecond))
+            {
+                matching = await stringsCollection.FindAsync(
+                    Builders<TransifexString>.Filter.And(filters),
+                    new FindOptions<TransifexString> { MaxTime = oneSecond, MaxAwaitTime = oneSecond },
+                    cancellationToken : cancellationTokenSource.Token
+                );
+            }
+            var result = matching.ToEnumerable().Take(200);
             return Json(result);
         }
     }

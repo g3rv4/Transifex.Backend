@@ -1,15 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
-using StackExchange.Redis;
 
 namespace Transifex.Backend.Services
 {

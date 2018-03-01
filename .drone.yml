@@ -8,5 +8,5 @@ pipeline:
       - "dotnet publish -f netcoreapp2.0 -o output-image/app/backend"
       - "cd output-image"
       - "git add app/backend"
-      - "git commit -m 'Backend update: ${DRONE_COMMIT_SHA}'"
+      - "git commit -m 'Backend update: ${DRONE_COMMIT_SHA} - ${DRONE_COMMIT_MESSAGE}'"
       - "git push"

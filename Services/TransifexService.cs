@@ -54,7 +54,7 @@ namespace Transifex.Backend.Services
                     return (str, content);
                 }, new ExecutionDataflowBlockOptions
                 {
-                    MaxDegreeOfParallelism = 32
+                    MaxDegreeOfParallelism = _configurationService.GetValue<int>("HTTP_PARALLELISM", 32)
                 });
 
             var stringsCollection = _mongoDbService.GetCollection<TransifexString>();
@@ -73,7 +73,7 @@ namespace Transifex.Backend.Services
                 );
             }, new ExecutionDataflowBlockOptions
             {
-                MaxDegreeOfParallelism = 8
+                MaxDegreeOfParallelism = _configurationService.GetValue<int>("MONGO_PARALLELISM", 8)
             });
 
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
